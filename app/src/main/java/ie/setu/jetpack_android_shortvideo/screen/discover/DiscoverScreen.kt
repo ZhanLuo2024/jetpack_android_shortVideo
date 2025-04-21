@@ -1,4 +1,4 @@
-package ie.setu.jetpack_android_shortvideo
+package ie.setu.jetpack_android_shortvideo.screen.discover
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -9,12 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun HomeScreen() {
+fun DiscoverScreen() {
     Box(
-        Modifier.fillMaxSize().background(Color.Red),
+        Modifier.fillMaxSize().background(Color.Blue),
         contentAlignment = Alignment.Center
     ) {
-        Text("Home Page", color = Color.White)
+        Text("Discover Page", color = Color.White)
     }
 }
-

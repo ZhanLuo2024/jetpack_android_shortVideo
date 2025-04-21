@@ -1,4 +1,4 @@
-package ie.setu.jetpack_android_shortvideo
+package ie.setu.jetpack_android_shortvideo.screen.publish
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

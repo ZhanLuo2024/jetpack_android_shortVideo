@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import ie.setu.jetpack_android_shortvideo.PublishScreen
+import ie.setu.jetpack_android_shortvideo.screen.publish.PublishScreen
 
 @Composable
 fun PublishNavHost(navController: NavHostController) {
