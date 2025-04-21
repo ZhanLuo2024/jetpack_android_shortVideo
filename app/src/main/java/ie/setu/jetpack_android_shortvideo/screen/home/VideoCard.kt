@@ -1,12 +1,14 @@
 package ie.setu.jetpack_android_shortvideo.screen.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.ChatBubbleOutline
+import androidx.compose.material.icons.filled.Pause
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,20 +17,22 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.material.icons.filled.Pause
+import androidx.navigation.NavController
+
+
 
 @Composable
 fun VideoCard(
     title: String,
     comment: String,
-    likeCount: Int
+    likeCount: Int,
+    navController: NavController
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
     ) {
-        // 標題
         Text(
             text = title,
             fontWeight = FontWeight.Bold,
@@ -36,7 +40,6 @@ fun VideoCard(
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        // 影片畫面
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -52,7 +55,6 @@ fun VideoCard(
             )
         }
 
-        // 時間條
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -63,7 +65,6 @@ fun VideoCard(
             Text(text = "00:19")
         }
 
-        // 互動功能：Like + Comment
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -71,7 +72,13 @@ fun VideoCard(
             horizontalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             IconWithText(icon = Icons.Filled.Favorite, text = likeCount.toString(), tint = Color.Red)
-            IconWithText(icon = Icons.Filled.ChatBubbleOutline, text = "Comment")
+            IconWithText(
+                icon = Icons.Filled.ChatBubbleOutline,
+                text = "Comment",
+                onClick = {
+                    navController.navigate("comment")
+                }
+            )
         }
     }
 }
@@ -80,9 +87,13 @@ fun VideoCard(
 fun IconWithText(
     icon: ImageVector,
     text: String,
-    tint: Color = Color.Gray
+    tint: Color = Color.Gray,
+    onClick: (() -> Unit)? = null
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = onClick?.let { Modifier.clickable { it() } } ?: Modifier
+    ) {
         Icon(imageVector = icon, contentDescription = null, tint = tint)
         Spacer(modifier = Modifier.width(4.dp))
         Text(text = text)

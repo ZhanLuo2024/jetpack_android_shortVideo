@@ -3,37 +3,21 @@ package ie.setu.jetpack_android_shortvideo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.activity.viewModels
 import ie.setu.jetpack_android_shortvideo.tab.TabScaffold
 import ie.setu.jetpack_android_shortvideo.ui.theme.Jetpack_android_shortVideoTheme
-
+import ie.setu.jetpack_android_shortvideo.viewmodel.SharedUiViewModel
 
 class MainActivity : ComponentActivity() {
+
+    private val sharedUiViewModel: SharedUiViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             Jetpack_android_shortVideoTheme {
-                TabScaffold()
+                TabScaffold(sharedUiViewModel = sharedUiViewModel)
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Jetpack_android_shortVideoTheme {
-        Greeting("Android")
     }
 }

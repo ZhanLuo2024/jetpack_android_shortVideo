@@ -12,9 +12,11 @@ import ie.setu.jetpack_android_shortvideo.nav.HomeNavHost
 import ie.setu.jetpack_android_shortvideo.nav.DiscoverNavHost
 import ie.setu.jetpack_android_shortvideo.nav.PublishNavHost
 import ie.setu.jetpack_android_shortvideo.nav.UserCenterNavHost
+import ie.setu.jetpack_android_shortvideo.viewmodel.SharedUiViewModel
+import androidx.compose.runtime.collectAsState
 
 @Composable
-fun TabScaffold() {
+fun TabScaffold(sharedUiViewModel: SharedUiViewModel) {
     val tabs = listOf("home", "discover", "publish", "user")
     var selectedTab by rememberSaveable { mutableStateOf("home") }
 
@@ -23,39 +25,45 @@ fun TabScaffold() {
     val publishNavController = rememberNavController()
     val userNavController = rememberNavController()
 
+    // 👇 讀取是否顯示 TabBar 的狀態
+    val isTabVisible = sharedUiViewModel.isTabVisible.collectAsState().value
+
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                tabs.forEach { tab ->
-                    NavigationBarItem(
-                        selected = selectedTab == tab,
-                        onClick = { selectedTab = tab },
-                        icon = {
-                            // set controllers
-                            when (tab) {
-                                "home" -> Icon(Icons.Default.Home, contentDescription = null)
-                                "discover" -> Icon(Icons.Default.Search, contentDescription = null)
-                                "publish" -> Icon(Icons.Default.Add, contentDescription = null)
-                                "user" -> Icon(Icons.Default.Person, contentDescription = null)
-                                else -> Icon(Icons.Default.Info, contentDescription = null)
-                            }
-                        },
-                        label = { Text(tab.replaceFirstChar { it.uppercaseChar() }) },
-                        // color change when click
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = MaterialTheme.colorScheme.primary,
-                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            selectedTextColor = MaterialTheme.colorScheme.primary,
-                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+            if (isTabVisible) {
+                NavigationBar {
+                    tabs.forEach { tab ->
+                        NavigationBarItem(
+                            selected = selectedTab == tab,
+                            onClick = { selectedTab = tab },
+                            icon = {
+                                when (tab) {
+                                    "home" -> Icon(Icons.Default.Home, contentDescription = null)
+                                    "discover" -> Icon(Icons.Default.Search, contentDescription = null)
+                                    "publish" -> Icon(Icons.Default.Add, contentDescription = null)
+                                    "user" -> Icon(Icons.Default.Person, contentDescription = null)
+                                    else -> Icon(Icons.Default.Info, contentDescription = null)
+                                }
+                            },
+                            label = { Text(tab.replaceFirstChar { it.uppercaseChar() }) },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
     ) { innerPadding ->
         Box(Modifier.padding(innerPadding)) {
             when (selectedTab) {
-                "home" -> HomeNavHost(navController = homeNavController)
+                "home" -> HomeNavHost(
+                    navController = homeNavController,
+                    sharedUiViewModel = sharedUiViewModel // 👈 傳進去
+                )
                 "discover" -> DiscoverNavHost(navController = discoverNavController)
                 "publish" -> PublishNavHost(navController = publishNavController)
                 "user" -> UserCenterNavHost(navController = userNavController)
@@ -63,4 +71,3 @@ fun TabScaffold() {
         }
     }
 }
-
