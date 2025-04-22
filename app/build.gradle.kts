@@ -56,7 +56,7 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.activity.ktx)
     implementation(libs.coil.compose)
-
+    implementation(libs.androidx.activity.ktx)
 
     testImplementation(libs.junit)
 

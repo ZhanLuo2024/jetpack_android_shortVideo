@@ -62,9 +62,12 @@ fun TabScaffold(sharedUiViewModel: SharedUiViewModel) {
             when (selectedTab) {
                 "home" -> HomeNavHost(
                     navController = homeNavController,
-                    sharedUiViewModel = sharedUiViewModel // 👈 傳進去
+                    sharedUiViewModel = sharedUiViewModel
                 )
-                "discover" -> DiscoverNavHost(navController = discoverNavController)
+                "discover" -> DiscoverNavHost(
+                    navController = discoverNavController,
+                    sharedUiViewModel = sharedUiViewModel
+                )
                 "publish" -> PublishNavHost(navController = publishNavController)
                 "user" -> UserCenterNavHost(navController = userNavController)
             }
