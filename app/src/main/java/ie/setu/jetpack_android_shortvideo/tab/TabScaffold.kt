@@ -14,6 +14,8 @@ import ie.setu.jetpack_android_shortvideo.nav.PublishNavHost
 import ie.setu.jetpack_android_shortvideo.nav.UserCenterNavHost
 import ie.setu.jetpack_android_shortvideo.viewmodel.SharedUiViewModel
 import androidx.compose.runtime.collectAsState
+import ie.setu.jetpack_android_shortvideo.viewmodel.DiscoverViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun TabScaffold(sharedUiViewModel: SharedUiViewModel) {
@@ -24,6 +26,8 @@ fun TabScaffold(sharedUiViewModel: SharedUiViewModel) {
     val discoverNavController = rememberNavController()
     val publishNavController = rememberNavController()
     val userNavController = rememberNavController()
+
+    val discoverViewModel: DiscoverViewModel = viewModel()
 
     // 👇 讀取是否顯示 TabBar 的狀態
     val isTabVisible = sharedUiViewModel.isTabVisible.collectAsState().value
@@ -68,8 +72,14 @@ fun TabScaffold(sharedUiViewModel: SharedUiViewModel) {
                     navController = discoverNavController,
                     sharedUiViewModel = sharedUiViewModel
                 )
-                "publish" -> PublishNavHost(navController = publishNavController)
-                "user" -> UserCenterNavHost(navController = userNavController)
+                "publish" -> PublishNavHost(
+                    navController = publishNavController
+                )
+                "user" -> UserCenterNavHost(
+                    navController = userNavController,
+                    discoverViewModel = discoverViewModel,
+                    sharedUiViewModel = sharedUiViewModel
+                )
             }
         }
     }
