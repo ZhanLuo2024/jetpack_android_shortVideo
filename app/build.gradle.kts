@@ -57,6 +57,10 @@ dependencies {
     implementation(libs.androidx.activity.ktx)
     implementation(libs.coil.compose)
     implementation(libs.androidx.activity.ktx)
+    implementation(libs.retrofit2)
+    implementation(libs.retrofit2.converter.gson)
+    implementation(libs.okhttp3)
+    implementation(libs.okhttp3.logging)
 
     testImplementation(libs.junit)
 

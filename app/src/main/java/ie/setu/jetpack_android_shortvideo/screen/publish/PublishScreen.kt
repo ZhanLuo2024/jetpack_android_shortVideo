@@ -1,12 +1,7 @@
-@file:Suppress("MISSING_DEPENDENCY_CLASS_IN_EXPRESSION_TYPE",
-    "MISSING_DEPENDENCY_CLASS_IN_LAMBDA_PARAMETER"
-)
-
 package ie.setu.jetpack_android_shortvideo.screen.publish
 
 import android.content.Intent
 import android.provider.MediaStore
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -27,12 +22,11 @@ fun PublishScreen(navController: NavController, discoverViewModel: DiscoverViewM
     var title by remember { mutableStateOf("") }
     val context = LocalContext.current
 
-    // 模擬調用相機
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) {
         // do nothing, just demo
-        }
+    }
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -59,12 +53,12 @@ fun PublishScreen(navController: NavController, discoverViewModel: DiscoverViewM
         Button(onClick = {
             if (title.isNotBlank()) {
                 discoverViewModel.videoList.add(0, Video(
-                    id = UUID.randomUUID().toString(),
-                    title = title,
-                    videoUrl = "https://example.com/fake.mp4",
-                    thumbnailUrl = "https://placekitten.com/400/300",
-                    likeCount = 0,
-                    comment = "Uploaded via demo"
+                    views = 0,
+                    created_at = System.currentTimeMillis(),
+                    video_url = "https://example.com/fake.mp4",
+                    likes = 0,
+                    video_id = UUID.randomUUID().toString(),
+                    title = title
                 ))
                 navController.navigate("discover_main")
             }
@@ -73,6 +67,3 @@ fun PublishScreen(navController: NavController, discoverViewModel: DiscoverViewM
         }
     }
 }
-
-
-

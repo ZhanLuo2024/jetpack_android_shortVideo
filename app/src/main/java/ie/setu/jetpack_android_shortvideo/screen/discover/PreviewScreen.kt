@@ -28,7 +28,7 @@ fun PreviewScreen(
     videoId: String?
 ) {
     val viewModel: DiscoverViewModel = viewModel()
-    val video = viewModel.videoList.find { it.id == videoId }
+    val video = viewModel.videoList.find { it.video_id == videoId }
 
     // 修正為穩定且可正確觸發的 hide 操作
     LaunchedEffect(videoId) {
@@ -49,7 +49,7 @@ fun PreviewScreen(
         )
 
         Image(
-            painter = rememberAsyncImagePainter(video?.thumbnailUrl ?: ""),
+            painter = rememberAsyncImagePainter(video?.video_url ?: ""),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
@@ -61,7 +61,7 @@ fun PreviewScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "❤️ ${video?.likeCount ?: 0} likes",
+            text = "❤️ ${video?.likes ?: 0} likes",
             fontSize = 16.sp,
             color = Color.DarkGray
         )

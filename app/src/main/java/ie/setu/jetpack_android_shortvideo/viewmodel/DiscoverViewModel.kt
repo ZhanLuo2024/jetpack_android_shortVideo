@@ -7,16 +7,16 @@ import ie.setu.jetpack_android_shortvideo.model.Video
 class DiscoverViewModel : ViewModel() {
     val videoList = mutableStateListOf(
         Video(
-            id = "1",
-            title = "Unexpected Dance Moves",
-            videoUrl = "https://example.com/video3.mp4",
-            thumbnailUrl = "https://picsum.photos/id/1005/400/300",
-            likeCount = 315,
-            comment = "This guy's crazy"
+            views = 315,
+            created_at = System.currentTimeMillis(),
+            video_url = "https://example.com/video3.mp4",
+            likes = 120,
+            video_id = "video_demo_1",
+            title = "Unexpected Dance Moves"
         )
     ).let { original ->
         mutableStateListOf<Video>().apply {
-            repeat(10) { this += original } // repeat 10 times
+            repeat(10) { this += original }
         }
     }
 }

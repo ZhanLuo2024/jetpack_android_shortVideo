@@ -1,79 +1,39 @@
 package ie.setu.jetpack_android_shortvideo.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.compose.runtime.mutableStateListOf
+import androidx.lifecycle.viewModelScope
 import ie.setu.jetpack_android_shortvideo.model.Video
+import ie.setu.jetpack_android_shortvideo.repository.VideoRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+
+sealed class VideoUiState {
+    object Loading : VideoUiState()
+    data class Success(val videos: List<Video>) : VideoUiState()
+    data class Error(val message: String) : VideoUiState()
+}
 
 class HomeViewModel : ViewModel() {
 
-    // 假資料（後續可從 AWS 取代）
-    private val _videoList = mutableStateListOf(
-        Video(
-            id = "1",
-            title = "This video is so funny",
-            videoUrl = "https://example.com/video1.mp4",
-            thumbnailUrl = "https://example.com/thumb1.jpg",
-            likeCount = 11,
-            comment = "User A"
-        ),
-        Video(
-            id = "2",
-            title = "This video is so funny",
-            videoUrl = "https://example.com/video2.mp4",
-            thumbnailUrl = "https://example.com/thumb2.jpg",
-            likeCount = 5,
-            comment = "User B"
-        ),
-        Video(
-            id = "1",
-            title = "This video is so funny",
-            videoUrl = "https://example.com/video1.mp4",
-            thumbnailUrl = "https://example.com/thumb1.jpg",
-            likeCount = 11,
-            comment = "User A"
-        ),
-        Video(
-            id = "2",
-            title = "This video is so funny",
-            videoUrl = "https://example.com/video2.mp4",
-            thumbnailUrl = "https://example.com/thumb2.jpg",
-            likeCount = 5,
-            comment = "User B"
-        ),
-        Video(
-            id = "1",
-            title = "This video is so funny",
-            videoUrl = "https://example.com/video1.mp4",
-            thumbnailUrl = "https://example.com/thumb1.jpg",
-            likeCount = 11,
-            comment = "User A"
-        ),
-        Video(
-            id = "2",
-            title = "This video is so funny",
-            videoUrl = "https://example.com/video2.mp4",
-            thumbnailUrl = "https://example.com/thumb2.jpg",
-            likeCount = 5,
-            comment = "User B"
-        ),
-        Video(
-            id = "1",
-            title = "This video is so funny",
-            videoUrl = "https://example.com/video1.mp4",
-            thumbnailUrl = "https://example.com/thumb1.jpg",
-            likeCount = 11,
-            comment = "User A"
-        ),
-        Video(
-            id = "2",
-            title = "This video is so funny",
-            videoUrl = "https://example.com/video2.mp4",
-            thumbnailUrl = "https://example.com/thumb2.jpg",
-            likeCount = 5,
-            comment = "User B"
-        ),
+    private val repository = VideoRepository()
 
-    )
+    private val _uiState = MutableStateFlow<VideoUiState>(VideoUiState.Loading)
+    val uiState: StateFlow<VideoUiState> = _uiState
 
-    val videoList: List<Video> = _videoList
+    init {
+        fetchVideos()
+    }
+
+    fun fetchVideos() {
+        _uiState.value = VideoUiState.Loading
+        viewModelScope.launch {
+            try {
+                val videos = repository.getVideos()
+                _uiState.value = VideoUiState.Success(videos)
+            } catch (e: Exception) {
+                _uiState.value = VideoUiState.Error("Failed to load videos. Please try again.")
+            }
+        }
+    }
 }

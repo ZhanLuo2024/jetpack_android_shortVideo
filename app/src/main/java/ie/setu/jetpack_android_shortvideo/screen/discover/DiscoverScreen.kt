@@ -42,7 +42,7 @@ fun DiscoverScreen(navController: NavController) {
         LazyVerticalGrid(columns = GridCells.Fixed(2), contentPadding = PaddingValues(6.dp)) {
             items(videos) { video ->
                 DiscoverGridItem(video = video) {
-                    navController.navigate("preview/${video.id}")
+                    navController.navigate("preview/${video.video_id}")
                 }
             }
         }
@@ -58,7 +58,7 @@ fun DiscoverGridItem(video: Video, onClick: () -> Unit) {
             .clickable { onClick() }
     ) {
         Image(
-            painter = rememberAsyncImagePainter(video.thumbnailUrl),
+            painter = rememberAsyncImagePainter(video.video_url),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()

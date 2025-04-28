@@ -114,7 +114,7 @@ fun UserCenterScreen(
             items(discoverViewModel.videoList.take(6)) { video ->
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Image(
-                        painter = rememberAsyncImagePainter(video.thumbnailUrl),
+                        painter = rememberAsyncImagePainter(video.video_url),
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxWidth()

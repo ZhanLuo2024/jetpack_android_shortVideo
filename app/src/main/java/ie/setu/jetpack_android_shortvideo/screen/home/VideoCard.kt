@@ -19,12 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
-
-
 @Composable
 fun VideoCard(
     title: String,
-    comment: String,
     likeCount: Int,
     navController: NavController
 ) {
@@ -71,13 +68,15 @@ fun VideoCard(
                 .padding(top = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            IconWithText(icon = Icons.Filled.Favorite, text = likeCount.toString(), tint = Color.Red)
+            IconWithText(
+                icon = Icons.Filled.Favorite,
+                text = likeCount.toString(),
+                tint = Color.Red
+            )
             IconWithText(
                 icon = Icons.Filled.ChatBubbleOutline,
                 text = "Comment",
-                onClick = {
-                    navController.navigate("comment")
-                }
+                onClick = { navController.navigate("comment") }
             )
         }
     }
@@ -92,7 +91,7 @@ fun IconWithText(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = onClick?.let { Modifier.clickable { it() } } ?: Modifier
+        modifier = if (onClick != null) Modifier.clickable { onClick() } else Modifier
     ) {
         Icon(imageVector = icon, contentDescription = null, tint = tint)
         Spacer(modifier = Modifier.width(4.dp))
