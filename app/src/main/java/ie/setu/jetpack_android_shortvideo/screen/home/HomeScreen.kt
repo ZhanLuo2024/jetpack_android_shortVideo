@@ -18,45 +18,33 @@ fun HomeScreen(navController: NavController) {
     val viewModel: HomeViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        when (uiState) {
-            is VideoUiState.Loading -> {
-                Column(
-                    modifier = Modifier.align(Alignment.Center),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    CircularProgressIndicator()
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(text = "Loading videos...")
-                }
+    when (uiState) {
+        is VideoUiState.Loading -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
             }
-            is VideoUiState.Success -> {
-                val videos = (uiState as VideoUiState.Success).videos
-                LazyColumn(
-                    contentPadding = PaddingValues(12.dp),
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(videos) { video ->
-                        VideoCard(
-                            title = video.title,
-                            likeCount = video.likes,
-                            navController = navController
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
-                }
+        }
+        is VideoUiState.Error -> {
+            val errorMessage = (uiState as VideoUiState.Error).message
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
             }
-            is VideoUiState.Error -> {
-                val errorMessage = (uiState as VideoUiState.Error).message
-                Column(
-                    modifier = Modifier.align(Alignment.Center),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = errorMessage)
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Button(onClick = { viewModel.fetchVideos() }) {
-                        Text("Retry")
-                    }
+        }
+        is VideoUiState.Success -> {
+            val videos = (uiState as VideoUiState.Success).videos
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(videos) { video ->
+                    VideoCard(
+                        title = video.title,
+                        likeCount = video.likes,
+                        videoUrl = video.video_url,
+                        navController = navController
+                    )
                 }
             }
         }

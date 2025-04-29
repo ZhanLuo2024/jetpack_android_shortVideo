@@ -31,9 +31,12 @@ class HomeViewModel : ViewModel() {
             try {
                 val videos = repository.getVideos()
                 _uiState.value = VideoUiState.Success(videos)
+
             } catch (e: Exception) {
                 _uiState.value = VideoUiState.Error("Failed to load videos. Please try again.")
             }
         }
     }
 }
+
+

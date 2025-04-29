@@ -61,6 +61,10 @@ dependencies {
     implementation(libs.retrofit2.converter.gson)
     implementation(libs.okhttp3)
     implementation(libs.okhttp3.logging)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
+    implementation(libs.media3.common)
+
 
     testImplementation(libs.junit)
 
