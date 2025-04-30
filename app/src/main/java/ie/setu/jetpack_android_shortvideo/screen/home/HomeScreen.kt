@@ -43,7 +43,8 @@ fun HomeScreen(navController: NavController) {
                         title = video.title,
                         likeCount = video.likes,
                         videoUrl = video.video_url,
-                        navController = navController
+                        navController = navController,
+                        videoId = video.video_id,
                     )
                 }
             }

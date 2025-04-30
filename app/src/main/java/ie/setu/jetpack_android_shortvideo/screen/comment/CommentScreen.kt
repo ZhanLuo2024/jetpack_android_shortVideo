@@ -10,18 +10,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import ie.setu.jetpack_android_shortvideo.model.Comment
+import ie.setu.jetpack_android_shortvideo.viewmodel.CommentUiState
 import ie.setu.jetpack_android_shortvideo.viewmodel.CommentViewModel
 import ie.setu.jetpack_android_shortvideo.viewmodel.SharedUiViewModel
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.dp
-
 
 @Composable
 fun CommentScreen(
@@ -32,7 +31,7 @@ fun CommentScreen(
     LaunchedEffect(Unit) { sharedUiViewModel.hideTab() }
     DisposableEffect(Unit) { onDispose { sharedUiViewModel.showTab() } }
 
-    val comments = commentViewModel.commentList
+    val uiState by commentViewModel.uiState.collectAsState()
     var newComment by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -43,37 +42,59 @@ fun CommentScreen(
             modifier = Modifier.padding(16.dp)
         )
 
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 8.dp)
-        ) {
-            items(comments) { comment ->
-                CommentItem(comment = comment)
-            }
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            OutlinedTextField(
-                value = newComment,
-                onValueChange = { newComment = it },
-                modifier = Modifier.weight(1f),
-                placeholder = { Text("Write a comment...") }
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Button(
-                onClick = {
-                    // TODO: 發送評論
+        when (uiState) {
+            is CommentUiState.Loading -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
                 }
-            ) {
-                Text("Send")
+            }
+
+            is CommentUiState.Error -> {
+                val message = (uiState as CommentUiState.Error).message
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = message, color = MaterialTheme.colorScheme.error)
+                }
+            }
+
+            is CommentUiState.Success -> {
+                val comments = (uiState as CommentUiState.Success).comments
+
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 8.dp)
+                ) {
+                    items(comments) { comment ->
+                        CommentItem(comment = comment)
+                    }
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedTextField(
+                        value = newComment,
+                        onValueChange = { newComment = it },
+                        modifier = Modifier.weight(1f),
+                        placeholder = { Text("Write a comment...") }
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Button(
+                        onClick = {
+                            if (newComment.isNotBlank()) {
+                                commentViewModel.addComment(newComment)
+                                newComment = ""
+                            }
+                        }
+                    ) {
+                        Text("Send")
+                    }
+                }
             }
         }
     }
@@ -105,7 +126,6 @@ fun CommentItem(comment: Comment) {
                 color = Color(0xFF3C3C43)
             )
 
-            // 有圖片就顯示
             comment.imageUrl?.let { url ->
                 Spacer(modifier = Modifier.height(12.dp))
                 Image(

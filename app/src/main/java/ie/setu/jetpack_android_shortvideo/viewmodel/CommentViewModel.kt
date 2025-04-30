@@ -1,39 +1,51 @@
 package ie.setu.jetpack_android_shortvideo.viewmodel
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import ie.setu.jetpack_android_shortvideo.model.Comment
+import ie.setu.jetpack_android_shortvideo.network.RetrofitClient
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+sealed class CommentUiState {
+    object Loading : CommentUiState()
+    data class Success(val comments: List<Comment>) : CommentUiState()
+    data class Error(val message: String) : CommentUiState()
+}
 
 class CommentViewModel : ViewModel() {
-    val commentList = mutableStateListOf(
-        Comment(
-            id = "c001",
-            user = "Emily",
-            content = "This is amazing!",
-            like = 5,
-            imageUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
-        ),
-        Comment(
-            id = "c002",
-            user = "John",
-            content = "Haha I laughed so hard!",
-            like = 3
-        ),
-        Comment(
-            id = "c003",
-            user = "Liam",
-            content = "Where can I find this?",
-            like = 1
-        )
-    )
+
+    private val _uiState = MutableStateFlow<CommentUiState>(CommentUiState.Loading)
+    val uiState: StateFlow<CommentUiState> = _uiState
+
+    init {
+        fetchComments()
+    }
+
+    fun fetchComments() {
+        viewModelScope.launch {
+            _uiState.value = CommentUiState.Loading
+            try {
+                val comments = RetrofitClient.videoApiService.getComments()
+                _uiState.value = CommentUiState.Success(comments)
+            } catch (e: Exception) {
+                _uiState.value = CommentUiState.Error("Failed to load comments.")
+            }
+        }
+    }
 
     fun addComment(text: String) {
+        val current = (_uiState.value as? CommentUiState.Success)?.comments ?: emptyList()
         val newComment = Comment(
-            id = "c${commentList.size + 1}",
+            id = "c${current.size + 1}",
             user = "You",
             content = text,
             like = 0
         )
-        commentList.add(0, newComment)
+        _uiState.update {
+            CommentUiState.Success(listOf(newComment) + current)
+        }
     }
 }

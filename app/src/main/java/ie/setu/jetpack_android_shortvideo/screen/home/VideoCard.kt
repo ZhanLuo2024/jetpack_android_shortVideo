@@ -25,15 +25,23 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
+import ie.setu.jetpack_android_shortvideo.network.RetrofitClient
+import android.widget.Toast
+
 
 @Composable
 fun VideoCard(
     title: String,
     likeCount: Int,
+    videoId: String,
     videoUrl: String,
     navController: NavController
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var currentLikes by remember { mutableStateOf(likeCount) }
+
     val exoPlayer = remember(videoUrl) {
         ExoPlayer.Builder(context).build().apply {
             val mediaItem = MediaItem.Builder()
@@ -92,8 +100,25 @@ fun VideoCard(
         ) {
             IconWithText(
                 icon = Icons.Filled.Favorite,
-                text = likeCount.toString(),
-                tint = Color.Red
+                text = currentLikes.toString(),
+                tint = Color.Red,
+                onClick = {
+                    currentLikes++
+                    scope.launch {
+                        try {
+                            val response = RetrofitClient.videoApiService.likeVideo(
+                                mapOf("video_id" to videoId)
+                            )
+                            if (!response.isSuccessful) {
+                                currentLikes--
+                                Toast.makeText(context, "Like failed", Toast.LENGTH_SHORT).show()
+                            }
+                        } catch (e: Exception) {
+                            currentLikes--
+                            Toast.makeText(context, "Network error", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
             )
             IconWithText(
                 icon = Icons.Filled.ChatBubbleOutline,
