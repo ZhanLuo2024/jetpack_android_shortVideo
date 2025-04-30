@@ -5,9 +5,7 @@ import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -25,13 +23,14 @@ fun PublishScreen(navController: NavController, discoverViewModel: DiscoverViewM
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) {
-        // do nothing, just demo
+        // 拍照不處理，僅示意
     }
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(20.dp)) {
-
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp)
+    ) {
         OutlinedTextField(
             value = title,
             onValueChange = { title = it },
@@ -48,21 +47,26 @@ fun PublishScreen(navController: NavController, discoverViewModel: DiscoverViewM
             Text("Open Camera")
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-        Button(onClick = {
-            if (title.isNotBlank()) {
-                discoverViewModel.videoList.add(0, Video(
-                    views = 0,
-                    created_at = System.currentTimeMillis(),
-                    video_url = "https://example.com/fake.mp4",
-                    likes = 0,
-                    video_id = UUID.randomUUID().toString(),
-                    title = title
-                ))
-                navController.navigate("discover_main")
-            }
-        }) {
+        Button(
+            onClick = {
+                if (title.isNotBlank()) {
+                    discoverViewModel.videoList.add(
+                        Video(
+                            views = 0,
+                            created_at = System.currentTimeMillis(),
+                            video_url = "https://picsum.photos/400/240?random=${UUID.randomUUID()}",
+                            likes = 0,
+                            video_id = UUID.randomUUID().toString(),
+                            title = title
+                        )
+                    )
+                    navController.navigate("discover_main")
+                }
+            },
+            enabled = title.isNotBlank()
+        ) {
             Text("Upload")
         }
     }
