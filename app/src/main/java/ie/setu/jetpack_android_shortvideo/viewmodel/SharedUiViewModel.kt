@@ -21,12 +21,15 @@ class SharedUiViewModel : ViewModel() {
 
     // login status
     var isLoggedIn = mutableStateOf(false)
+    var loggedInEmail = mutableStateOf<String?>(null)
 
-    fun login() {
+    fun login(email: String) {
         isLoggedIn.value = true
+        loggedInEmail.value = email
     }
 
     fun logout() {
         isLoggedIn.value = false
+        loggedInEmail.value = null
     }
 }

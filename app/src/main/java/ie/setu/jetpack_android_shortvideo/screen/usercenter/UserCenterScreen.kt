@@ -20,6 +20,14 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import ie.setu.jetpack_android_shortvideo.viewmodel.DiscoverViewModel
 import ie.setu.jetpack_android_shortvideo.viewmodel.SharedUiViewModel
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.call.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.launch
 
 @Composable
 fun UserCenterScreen(
@@ -48,8 +56,8 @@ fun UserCenterScreen(
     if (isLoginDialogOpen) {
         LoginDialog(
             onDismiss = { isLoginDialogOpen = false },
-            onLoginSuccess = {
-                sharedUiViewModel.login()
+            onLoginSuccess = { email ->
+                sharedUiViewModel.login(email)
                 isLoginDialogOpen = false
             }
         )
@@ -63,7 +71,7 @@ fun UserCenterScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 卡片包裝頭像與統計資料
+        // 使用者資訊卡片
         Card(
             shape = RoundedCornerShape(12.dp),
             elevation = CardDefaults.cardElevation(4.dp),
@@ -75,7 +83,6 @@ fun UserCenterScreen(
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 頭像與名稱
                 Image(
                     painter = rememberAsyncImagePainter("https://placekitten.com/150/150"),
                     contentDescription = null,
@@ -83,11 +90,14 @@ fun UserCenterScreen(
                         .size(80.dp)
                         .clip(CircleShape)
                 )
-                Text("DemoUser", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Text(
+                    sharedUiViewModel.loggedInEmail.value ?: "Unknown User",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
 
                 Spacer(Modifier.height(16.dp))
 
-                // 統計資料
                 Row(
                     horizontalArrangement = Arrangement.SpaceAround,
                     modifier = Modifier.fillMaxWidth()
@@ -101,7 +111,6 @@ fun UserCenterScreen(
 
         Spacer(Modifier.height(16.dp))
 
-        // 發佈影片清單（模擬 demo 用）
         Text("My Videos", fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.Start))
         Spacer(modifier = Modifier.height(8.dp))
         LazyVerticalGrid(
@@ -129,9 +138,14 @@ fun UserCenterScreen(
 }
 
 @Composable
-fun LoginDialog(onDismiss: () -> Unit, onLoginSuccess: () -> Unit) {
+fun LoginDialog(
+    onDismiss: () -> Unit,
+    onLoginSuccess: (String) -> Unit
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -152,12 +166,37 @@ fun LoginDialog(onDismiss: () -> Unit, onLoginSuccess: () -> Unit) {
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation()
                 )
+                errorMessage?.let {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = it, color = MaterialTheme.colorScheme.error, fontSize = 13.sp)
+                }
             }
         },
         confirmButton = {
             Button(onClick = {
-                if (email == "demo@example.com" && password == "123456") {
-                    onLoginSuccess()
+                scope.launch {
+                    val client = HttpClient(CIO) {
+                        install(ContentNegotiation) {
+                            json()
+                        }
+                    }
+
+                    try {
+                        val response = client.post("https://06wewvh5h5.execute-api.eu-west-1.amazonaws.com/prod/login") {
+                            contentType(ContentType.Application.Json)
+                            setBody(mapOf("email" to email, "password" to password))
+                        }
+
+                        if (response.status == HttpStatusCode.OK) {
+                            onLoginSuccess(email)
+                        } else {
+                            errorMessage = "Login failed: ${response.status}"
+                        }
+                    } catch (e: Exception) {
+                        errorMessage = "Network error: ${e.message}"
+                    } finally {
+                        client.close()
+                    }
                 }
             }) {
                 Text("Login")
@@ -170,5 +209,3 @@ fun LoginDialog(onDismiss: () -> Unit, onLoginSuccess: () -> Unit) {
         }
     )
 }
-
-
