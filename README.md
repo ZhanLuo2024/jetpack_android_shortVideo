@@ -85,3 +85,8 @@ However, the upload logic has been fully implemented and tested using simulated 
 - All backend APIs were tested using Postman before integrating into the app.
 - The AWS CDK was used to deploy and update backend resources automatically.
 - AWS IAM policies were carefully configured to give Lambda functions access to DynamoDB, S3, and Cognito without over-permission.
+
+## License
+
+This project was developed as part of an academic assignment and is not intended for commercial use.
+
