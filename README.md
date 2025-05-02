@@ -3,6 +3,9 @@
 This is a short video mobile application developed using **Jetpack Compose** and **MVVM** architecture.  
 The app connects to a fully serverless backend hosted on **AWS**, providing video streaming, commenting, like, and user login features.
 
+Demo: https://youtu.be/X8iMGItB2pw  
+Back-end repo: https://github.com/ZhanLuo2024/shortvideo-backend.git  
+
 ## Features
 
 - **Home Screen**:
